@@ -1,0 +1,55 @@
+### model
+model_name_or_path: Qwen2.5-3B-Instruct
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+# finetuning_type: lora
+# lora_target: q_proj,v_proj,k_proj,down_proj,up_proj,gate_proj,o_proj
+# lora_target: q_proj,v_proj,k_proj,gate_proj,o_proj,up_proj
+# lora_rank: 8
+# lora_alpha: 16
+deepspeed: examples/deepspeed/ds_z3_offload_config.json
+# deepspeed: examples/deepspeed/ds_z2_offload_config.json
+# deepspeed: examples/deepspeed/ds_z0_offload_config.json
+# optim: paged_adamw_8bit
+
+
+### dataset
+dataset: outline_sft_literature
+template: default
+
+cutoff_len: 4096  
+max_samples: 200000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: saves/qwen2.5_3b_instruct/full/sft/outline_literature
+logging_steps: 10  
+save_steps: 5000
+save_total_limit: 5 
+plot_loss: true
+overwrite_output_dir: true
+
+### train, full parameter, bsz=1
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 1
+learning_rate: 5.0e-6
+num_train_epochs: 10
+lr_scheduler_type: cosine
+warmup_ratio: 0.02  
+bf16: false
+ddp_timeout: 180000000
+### efficient long-text learning
+# enable_liger_kernel: true
+# use_unsloth_gc: true
+# gradient_checkpointing: true
+save_safetensors: false
+
+### eval
+val_size: 0.001
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 20000
